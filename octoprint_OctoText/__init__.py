@@ -131,6 +131,7 @@ class OctoTextPlugin(
             "show_navbar_button": True,
             "show_fail_cancel": False,
             "mmu_timeout": 0,
+            "cc_field": None,
             "use_ssl": False,
         }
 
@@ -253,10 +254,10 @@ class OctoTextPlugin(
         try:
             self._logger.debug("before server smtplib")
             if self._settings.get(["use_ssl"]):
-                SMTP_server = smtplib.SMTP_SSL(name, port, timeout=5)
+                SMTP_server = smtplib.SMTP_SSL(name, port, timeout=10)
                 SMTP_server.ehlo()
             else:
-                SMTP_server = smtplib.SMTP(name, port, timeout=5)
+                SMTP_server = smtplib.SMTP(name, port, timeout=10)
                 error = SMTP_server.starttls()
                 self._logger.debug(f"startttls() {error}")
             self._logger.debug(f"SMTP_server {SMTP_server}")
@@ -275,6 +276,7 @@ class OctoTextPlugin(
         ):  # Only use SMTP auth if the password has been supplied, skip if blank - issue #91
             self._logger.debug("Password supplied, attempting to log into mail server")
             try:
+                # self._logger.debug(f"*** Password : {passw}")
                 SMTP_server.login(login, passw)
             except Exception as e:
                 self._logger.exception(
